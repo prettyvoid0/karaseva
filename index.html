@@ -168,6 +168,7 @@
   .telegram{
     border:3px solid var(--black);background:#fff8;padding:30px 28px 24px;position:relative;
     opacity:0;transition:opacity .45s ease;
+    min-height:250px;
   }
   .telegram.visible{opacity:1}
   .telegram::before{
@@ -182,6 +183,7 @@
   .telegram .from{
     font-family:'Oswald',sans-serif;font-weight:600;font-size:12px;
     letter-spacing:.18em;text-transform:uppercase;color:var(--red);
+    min-height:2.8em;display:flex;align-items:flex-start;
   }
   .tg-cursor{
     display:inline-block;width:9px;height:1.1em;margin-left:2px;vertical-align:text-bottom;
@@ -288,6 +290,7 @@
     .slogan p{font-size:clamp(16px,5vw,22px)}
     .t-links a{padding:8px 12px;font-size:11px;letter-spacing:.1em}
     .b-logo{width:70px;height:70px}
+    .telegram{min-height:340px;padding:26px 20px 20px}
     .excerpt-box{padding:32px 24px}
     .boosty-box{grid-template-columns:1fr;gap:24px;padding:30px 24px;justify-items:start}
   }
