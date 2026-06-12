@@ -190,9 +190,13 @@
     background:var(--black);animation:tgblink .85s steps(1) infinite;
   }
   @keyframes tgblink{50%{opacity:0}}
-  .tg-dots{display:flex;gap:10px;margin-top:18px}
-  .tg-dots span{width:10px;height:10px;background:transparent;border:2px solid var(--black);border-radius:50%}
-  .tg-dots span.on{background:var(--red);border-color:var(--red)}
+  .tg-dots{display:flex;gap:12px;margin-top:18px}
+  .tg-dots button{
+    width:14px;height:14px;background:transparent;border:2px solid var(--black);
+    border-radius:50%;cursor:pointer;padding:0;
+  }
+  .tg-dots button.on{background:var(--red);border-color:var(--red)}
+  .tg-dots button:hover{border-color:var(--red)}
 
   /* ───── отрывок ───── */
   .excerpt-box{
@@ -334,7 +338,7 @@
       <div class="about-facts">
         <div class="fact"><b>Жанры</b><span>антиутопия, хоррор, психологическая проза, поэзия</span></div>
         <div class="fact"><b>Флагман</b><span>роман «Душегуб»</span></div>
-        <div class="fact"><b>В работе</b><span>2 произведения · ещё 14 в планах</span></div>
+        <div class="fact"><b>В работе</b><span>2 произведения · ещё 16 в планах</span></div>
         <div class="fact"><b>Любимое слово</b><span>«Любовь»</span></div>
       </div>
     </div>
@@ -491,6 +495,22 @@
         <span class="t-status">Замысел</span>
       </div>
 
+      <div class="t-item wip">
+        <span class="t-dot" aria-hidden="true">…</span>
+        <div class="t-year">Без даты</div>
+        <div class="t-title">«Конец „Астрала“»</div>
+        <div class="t-genre">Роман</div>
+        <span class="t-status">Замысел</span>
+      </div>
+
+      <div class="t-item wip">
+        <span class="t-dot" aria-hidden="true">…</span>
+        <div class="t-year">Без даты</div>
+        <div class="t-title">«Демоническое Возвышение»</div>
+        <div class="t-genre">Роман</div>
+        <span class="t-status">Замысел</span>
+      </div>
+
     </div>
   </section>
 
@@ -504,7 +524,7 @@
           <p id="tg-text"></p>
         </div>
       </div>
-      <div class="tg-dots" id="tg-dots" aria-hidden="true"></div>
+      <div class="tg-dots" id="tg-dots" role="tablist" aria-label="Выбор отзыва"></div>
     </div>
   </section>
 
@@ -591,18 +611,25 @@
     const dotsEl=document.getElementById('tg-dots');
     if(!card) return;
     const body=document.getElementById('tg-body');
-    reviews.forEach(r=>{
+    let run=0;        // токен: новый запуск отменяет старый
+    let manualIdx=-1;  // индекс отзыва, выбранного кликом (одноразовый)
+    reviews.forEach((r,idx)=>{
       const g=document.createElement('p');
       g.className='tg-ghost';g.setAttribute('aria-hidden','true');
       g.textContent=r.text;
       body.appendChild(g);
-      const d=document.createElement('span');dotsEl.appendChild(d);
+      const d=document.createElement('button');
+      d.type='button';
+      d.setAttribute('aria-label','Отзыв '+(idx+1));
+      d.addEventListener('click',()=>{run++;manualIdx=idx;show(idx,run)});
+      dotsEl.appendChild(d);
     });
     const dots=dotsEl.children;
     const reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    let i=0;
     const wait=ms=>new Promise(r=>setTimeout(r,ms));
-    async function show(idx){
+    async function show(idx,token){
+      const manual=(manualIdx===idx);
+      manualIdx=-1; // флаг одноразовый: следующие отзывы идут с обычной паузой
       for(let k=0;k<dots.length;k++)dots[k].classList.toggle('on',k===idx);
       const r=reviews[idx];
       fromEl.textContent=r.from;
@@ -610,25 +637,30 @@
       card.classList.add('visible');
       if(reduce){
         textEl.textContent=r.text;
-        await wait(5200);
+        await wait(manual?6500:5200);
+        if(token!==run)return;
       }else{
-        await wait(700); // телеграмма и адресат показаны — пауза перед печатью
+        await wait(700);
+        if(token!==run)return;
         const cur=document.createElement('span');cur.className='tg-cursor';
         textEl.appendChild(cur);
         for(const ch of r.text){
           cur.before(document.createTextNode(ch));
           await wait(28);
+          if(token!==run){cur.remove();return}
         }
         await wait(1500); // курсор задерживается
+        if(token!==run){cur.remove();return}
         cur.remove();
-        await wait(2200); // дочитываем
+        await wait(manual?5000:2200); // выбранный вручную отзыв висит дольше
+        if(token!==run)return;
       }
       card.classList.remove('visible');
       await wait(500);
-      i=(idx+1)%reviews.length;
-      show(i);
+      if(token!==run)return;
+      show((idx+1)%reviews.length,token);
     }
-    show(0);
+    show(0,run);
   })();
 
   const items=document.querySelectorAll('.t-item, .t-divider');
