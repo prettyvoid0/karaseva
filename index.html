@@ -25,6 +25,7 @@ body{
   background:var(--bg);color:var(--text);
   font-family:"Courier New","Liberation Mono","DejaVu Sans Mono",monospace;
   font-size:15px;line-height:1.6;min-height:100vh;overflow-x:hidden;position:relative;
+  font-variant-ligatures:none;font-feature-settings:"liga" 0,"calt" 0;
 }
 @media (min-width:900px){ body{font-size:16px} }
 a{color:inherit}
@@ -166,6 +167,11 @@ h1.jit{animation:jit .22s steps(2) 1}
 .bars i:nth-child(4){height:13px}.bars i:nth-child(5){height:16px}
 .bars i.on{background:var(--bright);box-shadow:0 0 6px rgba(127,208,160,.45)}
 .tx.open .fq{color:var(--rust2)}
+.tx.lock .tt{color:var(--rust)}
+.tx.lock.busy .tt,.tx.lock.revealed .tt{color:var(--rust2)}
+.tx.lock.revealed .fq{color:var(--rust2)}
+.tx.lock .tx-head:hover .tt{color:#e2764a}
+.tx.lock .bars i.on{background:var(--rust2);box-shadow:0 0 6px rgba(196,87,60,.5)}
 .tx-body{padding:2px 0 22px 0}
 .kind{font-size:.82rem;color:var(--dim)}
 .desc{margin:10px 0 12px;min-height:5em}
@@ -277,9 +283,9 @@ footer p + p{margin-top:6px;color:var(--rust)}
 
     <div class="col">
       <section class="win w-log" id="log">
-        <div class="wt"><b>журнал приёма</b><span>принято: 8</span></div>
+        <div class="wt"><b>журнал приёма</b><span>принято: 19</span></div>
         <div class="wb">
-          <p class="hint">Нажмите на передачу. Шкала справа показывает, насколько готова рукопись.</p>
+          <p class="hint">Нажмите на передачу. Шкала справа показывает готовность рукописи. Неопознанные сигналы сначала придётся расшифровать.</p>
           <div id="list"></div>
         </div>
       </section>
@@ -310,33 +316,27 @@ const clamp = (v,a,b) => Math.max(a, Math.min(b, v));
 
 /* ---------- данные ---------- */
 const TX = [
-  {g:0, f:'3 810', t:'«Тьма»', kind:'Сборник стихов №1, ожидается в июле–августе 2026', p:40,
-   note:'Рукопись готова на 40%.',
-   d:'Первое знакомство. Всё о топливе для писательства, о пути, который привёл к этому ремеслу, о сомнениях, атакующих творческую душу.'},
-  {g:0, f:'4 042', t:'«Душегуб»', kind:'Роман, тёмное фэнтези, флагманский проект, октябрь–декабрь 2026', p:40,
-   note:'Пролог и главы 1–2 готовы, главы 3–16 в черновике.',
-   d:'Магия планеты Нитль угасает, и мир сотрясают катаклизмы. Чтобы оттянуть конец, учёные создали Душегуб — установку, стабилизирующую потоки магии ценой жизни самих магов. Каин — один из узников, отправленных на забой.'},
-  {g:1, f:'4 777', t:'«Семь смертных грехов»', kind:'Сборник стихов №2, 2027', p:14,
-   note:'«Гордыня» написана: 1 из 7.',
-   d:'Каждый стих олицетворяет свой грех — в той или иной мере присущий каждому живущему человеку. Семь зеркал, в которые придётся посмотреть.'},
-  {g:1, f:'5 250', t:'«Багровый лес»', kind:'Повесть, триллер, 2027', p:25,
-   note:'Сюжет готов.',
-   d:'Мужчина оставил жену с деменцией одну и ушёл на вахту лесным рейнджером. Тайны леса переплетаются с его сожалением о том, правильно ли он поступил.'},
-  {g:1, f:'5 918', t:'«Откуда в монетке отверстие?»', kind:'Рассказ, триллер, 2028', p:20,
-   note:'Первая глава готова.',
-   d:'Пропали дети. С пропажами связана странная монетка с отверстием, из которого сочатся кровь и гниль. Обычный мальчик пытается вернуть друзей и сохранить рассудок.'},
-  {g:1, f:'6 038', t:'«Тридцать Восьмой»', kind:'Роман-антиутопия, 2028', p:3,
-   note:'Часть каркаса сюжета.',
-   d:'Человек в чужом мире отказался от совести и честности ради службы в силовых структурах. Расследование ведёт его на улицы тёмного города, где творится невозможное.'},
-  {g:1, f:'7 130', t:'«Железо»', kind:'Роман-антиутопия, 2029', p:4,
-   note:'Наброски мира и героев.',
-   d:'В умирающей стране людей принудительно превращают в киборгов ради выживания нации. Индустриальные города работают лишь затем, чтобы содержать богатые изолированные сословия. Назревает гражданская война.'},
-  {g:1, f:'8 400', t:'«Сигнал»', kind:'Роман-хоррор, 2030', p:0,
-   note:'Не начато. Сигнала пока нет.',
-   echo:'Я тоже\nвас слышу.',
-   d:'Учёный в собственной удалённой обсерватории занят исследованием космоса. Его рутина резко меняется, когда он начинает получать странные сигналы.'}
+  {g:0, f:"3 810", t:"«Тьма»", kind:"Сборник стихов №1, ожидается в июле–августе 2026", p:40, note:"Рукопись готова на 40%.", d:"Первое знакомство. Всё о топливе для писательства, о пути, который привёл к этому ремеслу, о сомнениях, атакующих творческую душу."},
+  {g:0, f:"4 042", t:"«Душегуб»", kind:"Роман, тёмное фэнтези, флагманский проект, октябрь–декабрь 2026", p:40, note:"Пролог и главы 1–2 готовы, главы 3–16 в черновике.", d:"Магия планеты Нитль угасает, и мир сотрясают катаклизмы. Чтобы оттянуть конец, учёные создали Душегуб — установку, стабилизирующую потоки магии ценой жизни самих магов. Каин — один из узников, отправленных на забой."},
+  {g:1, lock:true, f:"4 777", t:"«Семь смертных грехов»", kind:"Сборник стихов №2, 2027", p:14, note:"«Гордыня» написана: 1 из 7.", d:"Каждый стих олицетворяет свой грех — в той или иной мере присущий каждому живущему человеку. Семь зеркал, в которые придётся посмотреть."},
+  {g:1, lock:true, f:"5 250", t:"«Багровый лес»", kind:"Повесть, триллер, 2027", p:25, note:"Сюжет готов.", d:"Мужчина оставил жену с деменцией одну и ушёл на вахту лесным рейнджером. Тайны леса переплетаются с его сожалением о том, правильно ли он поступил."},
+  {g:1, lock:true, f:"5 918", t:"«Откуда в монетке отверстие?»", kind:"Рассказ, триллер, 2028", p:20, note:"Первая глава готова.", d:"Пропали дети. С пропажами связана странная монетка с отверстием, из которого сочатся кровь и гниль. Обычный мальчик пытается вернуть друзей и сохранить рассудок."},
+  {g:1, lock:true, f:"6 038", t:"«Тридцать Восьмой»", kind:"Роман-антиутопия, 2028", p:3, note:"Часть каркаса сюжета.", d:"Человек в чужом мире отказался от совести и честности ради службы в силовых структурах. Расследование ведёт его на улицы тёмного города, где творится невозможное."},
+  {g:1, lock:true, f:"4 208", t:"«Голоса»", kind:"Сборник стихов №3, 2028", p:0, note:"Не начато.", d:"Рукопись не начата. Сигнал есть, слов пока нет."},
+  {g:1, lock:true, f:"5 573", t:"«Сны, что открывали тайны»", kind:"Рассказ, мистический хоррор, 2029", p:15, note:"Каркас сюжета, идёт доработка.", d:"Секрет успеха популярного японского писателя в том, что каждую ночь во сне он попадает в самые разные миры, а проснувшись, пишет о них истории."},
+  {g:1, lock:true, f:"7 130", t:"«Железо»", kind:"Роман-антиутопия, 2029", p:4, note:"Наброски мира и героев.", d:"В умирающей стране людей принудительно превращают в киборгов ради выживания нации. Индустриальные города работают лишь затем, чтобы содержать богатые изолированные сословия. Назревает гражданская война."},
+  {g:1, lock:true, f:"6 290", t:"«Стадии»", kind:"Сборник стихов №4, 2029", p:0, note:"Не начато.", d:"Рукопись не начата. Сигнал есть, слов пока нет."},
+  {g:1, lock:true, f:"8 400", t:"«Сигнал»", kind:"Роман-хоррор, 2030", p:0, note:"Не начато. Сигнала пока нет.", echo:"Я тоже\nвас слышу.", d:"Учёный в собственной удалённой обсерватории занят исследованием космоса. Его рутина резко меняется, когда он начинает получать странные сигналы."},
+  {g:1, lock:true, f:"6 771", t:"«До чего доводит любовь»", kind:"Роман, драма, 2030", p:5, note:"Пролог готов.", d:"Мужчина с душевными травмами переживает расставание и находит новую девушку. История, начинавшаяся идеально, постепенно превращается в кошмар для каждой из сторон."},
+  {g:1, lock:true, f:"7 405", t:"«Добродетели»", kind:"Сборник стихов №5, 2030", p:0, note:"Не начато.", d:"Рукопись не начата. Сигнал есть, слов пока нет."},
+  {g:1, lock:true, f:"3 333", t:"«Мёртвая петля»", kind:"Роман-хоррор, без даты", p:7, note:"Каркас сюжета готов.", d:"Учёный по ошибке вызвал аварию и погубил свою любовницу. Не желая расставаться с ней, он запирает себя во временной петле и заново проживает последние три дня."},
+  {g:1, lock:true, f:"3 041", t:"«Бессонница»", kind:"Сборник стихов №6, без даты", p:0, note:"Замысел.", d:"Пока это только замысел. Слов ещё нет, но сигнал уже пробивается сквозь шум."},
+  {g:1, lock:true, f:"2 180", t:"«Скрип под полом»", kind:"Повесть, хоррор, без даты", p:0, note:"Замысел.", d:"Пока это только замысел. Слов ещё нет, но сигнал уже пробивается сквозь шум."},
+  {g:1, lock:true, f:"9 120", t:"«Конец „Астрала“»", kind:"ЛитРПГ, без даты", p:0, note:"Замысел.", d:"Пока это только замысел. Слов ещё нет, но сигнал уже пробивается сквозь шум."},
+  {g:1, lock:true, f:"9 660", t:"«Демоническое Возвышение»", kind:"ЛитРПГ, попаданец, бояръ-аниме, без даты", p:0, note:"Замысел.", d:"Пока это только замысел. Слов ещё нет, но сигнал уже пробивается сквозь шум."},
+  {g:1, lock:true, f:"9 305", t:"«Кровоточит — значит смертен»", kind:"Роман, хоррор, драма, научная фантастика, без даты", p:0, note:"Замысел.", d:"Пока это только замысел. Слов ещё нет, но сигнал уже пробивается сквозь шум."}
 ];
-const GROUPS = ['Сейчас в эфире','Ожидается'];
+const GROUPS = ['Сейчас в эфире','Неопознанные сигналы'];
 
 /* ---------- декодер текста ---------- */
 const GL = '▓▒░█▚▞▙▜#%/\\|+=<>';
@@ -585,11 +585,30 @@ const bars = p => {
   const n = p === 0 ? 0 : Math.max(1, Math.round(p/20));
   return [1,2,3,4,5].map(k => `<i class="${k<=n?'on':''}"></i>`).join('');
 };
+const S = TX.map(() => ({revealed:false, busy:false, timers:[], decs:[], len: 8 + Math.floor(Math.random()*8)}));
+const glStr = n => { let o = ''; for(let k=0;k<n;k++) o += GL[Math.floor(Math.random()*GL.length)]; return o; };
+const fmtF = f => String(f).replace(/\B(?=(\d{3})+(?!\d))/g,'\u00a0');
+
 (function build(){
   let html = '', g = -1;
   TX.forEach((x,i)=>{
     if(x.g !== g){ g = x.g; html += `<p class="group">${GROUPS[g]}</p>`; }
-    html += `
+    if(x.lock){
+      html += `
+    <div class="tx lock" id="tx${i}">
+      <button class="tx-head" aria-expanded="false" aria-controls="p${i}" aria-label="Неопознанная передача, ${x.f} кГц">
+        <span class="fq">${x.f}</span>
+        <span class="tt gl" aria-hidden="true"></span>
+        <span class="bars" role="img" aria-label="Сигнал нестабилен">${bars(x.p)}</span>
+      </button>
+      <div class="tx-body" id="p${i}" hidden>
+        <p class="kind gl"><span class="vh"></span><span class="kd" aria-hidden="true"></span></p>
+        <p class="desc"><span class="vh"></span><span class="gl dec" aria-hidden="true"></span></p>
+        <p class="st"></p>
+      </div>
+    </div>`;
+    } else {
+      html += `
     <div class="tx" id="tx${i}">
       <button class="tx-head" aria-expanded="false" aria-controls="p${i}">
         <span class="fq">${x.f}</span>
@@ -602,12 +621,42 @@ const bars = p => {
         <p class="st"></p>
       </div>
     </div>`;
+    }
   });
   $('#list').innerHTML = html;
   $('#list').addEventListener('click', e=>{
     const b = e.target.closest('.tx-head');
     if(b) toggle(+b.parentElement.id.slice(2));
   });
+
+  // вместо названий — бегущие символы, пока сигнал не расшифрован
+  const lockedTT = [];
+  TX.forEach((x,i)=>{ if(x.lock) lockedTT.push({i, el:$('#tx'+i+' .tt')}); });
+  const tickGlitch = () => lockedTT.forEach(o=>{
+    const st = S[o.i];
+    if(st.revealed || st.busy) return;
+    o.el.textContent = glStr(st.len);
+  });
+  tickGlitch();
+  if(!RM) setInterval(tickGlitch, 110);
+
+  // пинг у этих передач скачет: шкала прыгает, частота плывёт
+  const pings = [];
+  TX.forEach((x,i)=>{
+    if(!x.lock) return;
+    const r = $('#tx'+i);
+    pings.push({base: parseInt(x.f.replace(/\s/g,''),10), fq: r.querySelector('.fq'), bars: [...r.querySelectorAll('.bars i')]});
+  });
+  (function pingTick(){
+    pings.forEach(it=>{
+      if(Math.random() < .65){
+        const lvl = Math.floor(Math.random()*6);
+        it.bars.forEach((b,k)=>b.classList.toggle('on', k < lvl));
+      }
+      if(Math.random() < .4) it.fq.textContent = fmtF(it.base + Math.round((Math.random()-.5)*24));
+    });
+    if(!RM) setTimeout(pingTick, 160 + Math.random()*420);
+  })();
 })();
 
 function clearEcho(){ echoT.forEach(clearTimeout); echoT = []; }
@@ -617,18 +666,22 @@ function show(i){
   if(dec) dec.stop();
   dec = makeDecoder(el, x.d, 1, 1300);
   box.querySelector('.st').textContent = x.note;
-  if(x.echo && !RM){
+  scheduleEcho(i);
+}
+function scheduleEcho(i){
+  const x = TX[i];
+  if(!x.echo || RM) return;
+  const el = $('#p'+i).querySelector('.dec');
+  echoT.push(setTimeout(()=>{
+    if(openIdx !== i) return;
+    if(dec) dec.stop();
+    dec = makeDecoder(el, x.echo, 1, 1300);
     echoT.push(setTimeout(()=>{
       if(openIdx !== i) return;
       if(dec) dec.stop();
-      dec = makeDecoder(el, x.echo, 1, 1300);
-      echoT.push(setTimeout(()=>{
-        if(openIdx !== i) return;
-        if(dec) dec.stop();
-        dec = makeDecoder(el, x.d, 1, 1300);
-      }, 4200));
-    }, 3200));
-  }
+      dec = makeDecoder(el, x.d, 1, 1300);
+    }, 4200));
+  }, 3200));
 }
 function close(i){
   const t = $('#tx'+i);
@@ -636,7 +689,41 @@ function close(i){
   t.querySelector('.tx-head').setAttribute('aria-expanded','false');
   $('#p'+i).hidden = true;
   clearEcho();
+  if(TX[i].lock && !S[i].revealed) abortDecrypt(i);
   if(dec){ dec.stop(); dec = null; }
+}
+function abortDecrypt(i){
+  const st = S[i];
+  st.timers.forEach(clearTimeout); st.timers = [];
+  st.decs.forEach(d=>d.stop()); st.decs = [];
+  st.busy = false;
+  $('#tx'+i).classList.remove('busy');
+}
+function decrypt(i){
+  const x = TX[i], st = S[i], row = $('#tx'+i), box = $('#p'+i);
+  const tt = row.querySelector('.tt'), kd = box.querySelector('.kd'), de = box.querySelector('.dec');
+  clearEcho();
+  if(dec) dec.stop();
+  st.busy = true; row.classList.add('busy');
+  box.querySelector('.st').textContent = '';
+  dec = makeDecoder(de, x.d, 0, 300);                 // бегущие буквы вместо описания
+  st.decs = [makeDecoder(kd, x.kind, 0, 300)];
+  ['Расшифровка.','Расшифровка..','Расшифровка...'].forEach((t,k)=>{
+    st.timers.push(setTimeout(()=>{ tt.textContent = t; }, k*650));
+  });
+  st.timers.push(setTimeout(()=>{
+    st.busy = false; st.revealed = true;
+    row.classList.remove('busy'); row.classList.add('revealed');
+    row.querySelector('.tx-head').setAttribute('aria-label', x.t);
+    box.querySelector('.kind .vh').textContent = x.kind;
+    box.querySelector('.desc .vh').textContent = x.d;
+    st.decs.forEach(d=>d.stop());
+    st.decs = [makeDecoder(tt, x.t, 1, 600), makeDecoder(kd, x.kind, 1, 800)];
+    if(dec) dec.stop();
+    dec = makeDecoder(de, x.d, 1, 1500);              // буквы описания начинают проявляться
+    box.querySelector('.st').textContent = x.note;
+    scheduleEcho(i);
+  }, 2000));
 }
 function toggle(i){
   if(openIdx === i){ close(i); openIdx = -1; return; }
@@ -646,7 +733,7 @@ function toggle(i){
   t.classList.add('open');
   t.querySelector('.tx-head').setAttribute('aria-expanded','true');
   $('#p'+i).hidden = false;
-  show(i);
+  if(TX[i].lock && !S[i].revealed) decrypt(i); else show(i);
 }
 
 /* ---------- часы на панели ---------- */
