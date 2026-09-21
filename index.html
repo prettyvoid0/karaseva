@@ -1,673 +1,811 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#070a08">
 <title>Ульяна Карасёва — писательница</title>
-<link rel="icon" type="image/svg+xml" href="favicon-k.svg">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Stalinist+One&family=Oswald:wght@400;500;600;700&family=PT+Serif:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
 <style>
-  :root{
-    --paper:#f1ecdd;
-    --red:#bd1622;
-    --red-dark:#8f0f18;
-    --black:#1d1a17;
-    --rule:#1d1a17;
-  }
-  *{margin:0;padding:0;box-sizing:border-box;min-width:0}
-  html{scroll-behavior:smooth;overflow-x:hidden}
-  body{
-    background:var(--paper);
-    color:var(--black);
-    font-family:'PT Serif',serif;
-    line-height:1.6;
-    overflow-x:hidden;
-    max-width:100vw;
-  }
-  ::selection{background:var(--red);color:var(--paper)}
-  a:focus-visible{outline:3px solid var(--red);outline-offset:3px}
+:root{
+  --bg:#070a08;
+  --line:#1b2a21;
+  --line2:#2a4034;
+  --dim:#587866;
+  --text:#aec4b5;
+  --bright:#7fd0a0;
+  --rust:#a3341f;
+  --rust2:#c4573c;
+  --orange:#ff8a1f;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+[hidden]{display:none!important}
+html{background:#040605;-webkit-text-size-adjust:100%;scroll-behavior:smooth;scrollbar-width:none;-ms-overflow-style:none}
+html::-webkit-scrollbar,body::-webkit-scrollbar{display:none;width:0;height:0}
+body{
+  background:var(--bg);color:var(--text);
+  font-family:"Courier New","Liberation Mono","DejaVu Sans Mono",monospace;
+  font-size:15px;line-height:1.6;min-height:100vh;overflow-x:hidden;position:relative;
+}
+@media (min-width:900px){ body{font-size:16px} }
+a{color:inherit}
+:focus-visible{outline:2px solid var(--bright);outline-offset:3px}
+.vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.band,.station{position:relative;z-index:1}
 
-  .wrap{max-width:1080px;margin:0 auto;padding:0 28px}
+/* ---------- слои эффектов ---------- */
+.fx{position:fixed;inset:0;pointer-events:none}
+#sky,#veins{z-index:0;width:100%;height:100%}
+.grain{
+  z-index:50;opacity:.11;mix-blend-mode:screen;
+  background-image:url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  animation:grain .6s steps(4) infinite;
+}
+.scan{z-index:51;background:repeating-linear-gradient(0deg,rgba(0,0,0,.24) 0 1px,transparent 1px 3px)}
+.vig{z-index:52;background:radial-gradient(ellipse at center,transparent 40%,rgba(0,0,0,.7) 100%)}
+.pulse{z-index:53;opacity:0;background:radial-gradient(ellipse at center,transparent 42%,rgba(120,22,14,.55) 100%)}
+@keyframes grain{0%{background-position:0 0}25%{background-position:-40px 22px}50%{background-position:30px -50px}75%{background-position:-20px -10px}100%{background-position:0 0}}
+@keyframes flick{0%,100%{opacity:.75}46%{opacity:.75}47%{opacity:.6}48%{opacity:.78}80%{opacity:.75}81%{opacity:.64}82%{opacity:.75}}
+@keyframes jit{
+  0%{transform:translateX(-3px);text-shadow:3px 0 rgba(163,52,31,.9),-3px 0 rgba(90,200,220,.5)}
+  50%{transform:translateX(4px) skewX(-3deg);text-shadow:-3px 0 rgba(163,52,31,.9),3px 0 rgba(90,200,220,.5)}
+  100%{transform:none}
+}
+@keyframes rise{from{opacity:0}to{opacity:1}}
+@keyframes beacon{0%,100%{opacity:.12}50%{opacity:1}}
+@keyframes blink{50%{opacity:0}}
 
-  .stripe{height:14px;background:repeating-linear-gradient(135deg,var(--red) 0 22px,var(--paper) 22px 32px,var(--black) 32px 40px,var(--paper) 40px 50px)}
+/* ---------- загрузка ---------- */
+#boot{
+  position:fixed;inset:0;z-index:45;background:#040605;
+  display:flex;align-items:center;justify-content:center;cursor:pointer;transition:opacity .5s;
+}
+#boot.out{opacity:0;pointer-events:none}
+.bootin{width:min(420px,88vw);font-size:.92rem;line-height:1.7}
+#bootlog div{color:var(--text)}
+#bootlog .warn{color:var(--rust2)}
+.cur{display:inline-block;width:.6em;height:1em;background:var(--bright);vertical-align:-.15em;animation:blink 1s steps(2) infinite}
+.bootskip{margin-top:26px;color:var(--dim);font-size:.78rem}
 
-  header{
-    border-bottom:4px solid var(--black);
-    display:flex;justify-content:space-between;align-items:center;
-    padding:20px 0;
-  }
-  .brand{
-    font-family:'Oswald',sans-serif;font-weight:700;font-size:17px;
-    letter-spacing:.18em;text-transform:uppercase;
-  }
-  .brand .star{color:var(--red)}
-  nav{display:flex;gap:0}
-  nav a{
-    font-family:'Oswald',sans-serif;font-weight:600;font-size:13px;
-    letter-spacing:.14em;text-transform:uppercase;text-decoration:none;
-    color:var(--black);padding:8px 18px;border-left:2px solid var(--black);
-    transition:background .2s,color .2s;
-  }
-  nav a:hover{background:var(--red);color:var(--paper)}
+/* ---------- верхняя панель ---------- */
+.bar{
+  position:sticky;top:0;z-index:20;background:rgba(7,10,8,.92);border-bottom:1px solid var(--line);
+  font-size:.82rem;
+}
+.bar-in{max-width:1100px;margin:0 auto;padding:8px 16px;display:flex;align-items:center;gap:14px}
+.brand{display:flex;align-items:center;gap:9px;color:var(--bright);white-space:nowrap}
+.led{width:8px;height:8px;border-radius:50%;background:var(--rust2);opacity:.4}
+.bar nav{margin-left:auto;display:flex;gap:16px}
+.bar nav a{color:var(--dim);text-decoration:none;padding:8px 0}
+.bar nav a:hover{color:var(--bright)}
+.clock{color:var(--dim)}
+@media (max-width:599px){ .clock{display:none} .bar nav{gap:13px} }
 
-  .hero{padding:80px 0 70px;position:relative}
-  .hero .call{
-    display:inline-block;background:var(--red);color:var(--paper);
-    font-family:'Oswald',sans-serif;font-weight:700;font-size:15px;
-    letter-spacing:.3em;text-transform:uppercase;
-    padding:8px 20px;transform:rotate(-2deg);margin-bottom:36px;
-  }
-  h1{
-    font-family:'Stalinist One',sans-serif;font-weight:400;
-    font-size:clamp(22px,6.2vw,76px);line-height:1.12;
-    text-transform:uppercase;
-    overflow-wrap:break-word;word-break:break-word;hyphens:auto;
-  }
-  h1 .red{color:var(--red)}
-  .hero .sub{
-    margin-top:34px;max-width:560px;font-size:19px;font-style:italic;
-  }
-  .hero .diag{
-    position:absolute;right:0;top:0;bottom:0;width:180px;
-    background:repeating-linear-gradient(135deg,transparent 0 30px,rgba(189,22,34,.10) 30px 60px);
-    pointer-events:none;
-  }
+/* ---------- небо и антенна ---------- */
+.band{height:clamp(120px,22vw,260px);overflow:hidden;background:linear-gradient(to top,rgba(34,70,50,.5),transparent 85%)}
+.band svg{position:absolute;right:0;bottom:0;height:100%;width:auto}
+.band::after{content:"";position:absolute;left:0;right:0;bottom:0;height:6.4%;background:#040605}
+.beacon{animation:beacon 3.4s ease-in-out infinite}
 
-  section{padding:80px 0;border-top:4px solid var(--black)}
-  .sec-label{
-    display:inline-block;background:var(--black);color:var(--paper);
-    font-family:'Oswald',sans-serif;font-weight:600;font-size:13px;
-    letter-spacing:.28em;text-transform:uppercase;padding:6px 16px;margin-bottom:22px;
-  }
-  h2{
-    font-family:'Oswald',sans-serif;font-weight:700;
-    font-size:clamp(26px,5vw,54px);line-height:1.1;
-    text-transform:uppercase;letter-spacing:.02em;margin-bottom:44px;
-    overflow-wrap:break-word;
-  }
-  h2 em{font-style:normal;color:var(--red)}
+/* ---------- сетка окон ---------- */
+.station{max-width:1100px;margin:0 auto;padding:22px 16px 40px}
+.grid{display:flex;flex-direction:column;gap:18px}
+.col{display:contents}
+@media (max-width:899px){
+  .w-spec{order:1}.w-log{order:2}.w-op{order:3}.w-cut{order:4}.w-com{order:5}
+}
+@media (min-width:900px){
+  .station{padding:28px 20px 50px}
+  .grid{display:grid;grid-template-columns:1.08fr 1fr;gap:26px;align-items:start}
+  .col{display:flex;flex-direction:column;gap:26px}
+}
+.win{
+  position:relative;scroll-margin-top:60px;
+  background:conic-gradient(rgba(255,255,255,.022) 25%,transparent 0 50%,rgba(255,255,255,.022) 0 75%,transparent 0) 0 0/4px 4px,rgba(6,10,8,.88);
+  border:1px solid var(--line2);outline:1px solid var(--line);outline-offset:3px;
+}
+.wt{display:flex;justify-content:space-between;gap:12px;padding:7px 12px;border-bottom:1px solid var(--line2);background:rgba(14,24,18,.92);font-size:.78rem;color:var(--dim)}
+.wt b{font-weight:400;color:var(--bright)}
+.wb{padding:16px}
 
-  .about-grid{display:grid;grid-template-columns:1.4fr 1fr;gap:54px}
-  .about-grid p{margin-bottom:18px;font-size:17px}
-  .about-facts{border:3px solid var(--black);padding:30px;background:#fff8}
-  .fact{margin-bottom:22px}
-  .fact:last-child{margin-bottom:0}
-  .fact b{
-    display:block;font-family:'Oswald',sans-serif;font-weight:600;font-size:12px;
-    letter-spacing:.2em;text-transform:uppercase;color:var(--red);margin-bottom:3px;
-  }
+/* спектр */
+.w-spec .wb{padding:0;position:relative;height:clamp(340px,56svh,480px);overflow:hidden}
+.w-spec canvas{position:absolute;inset:0;width:100%;height:100%;image-rendering:pixelated;opacity:.75;animation:flick 9s infinite}
+.w-spec .wb::after{content:"";position:absolute;inset:0;background:linear-gradient(to bottom,rgba(6,10,8,.35) 0,rgba(6,10,8,0) 30%,rgba(6,10,8,.94) 100%)}
+.spec-text{position:absolute;left:0;right:0;bottom:0;z-index:2;padding:18px}
+.tune{color:var(--dim);font-size:.85rem;margin-bottom:8px;min-height:1.6em}
+h1{
+  font-size:clamp(2.6rem,13vw,4.6rem);line-height:.98;font-weight:700;letter-spacing:-.02em;
+  color:var(--bright);text-shadow:0 0 20px rgba(143,224,172,.3);
+}
+@media (min-width:900px){ h1{font-size:clamp(3rem,5.4vw,4.8rem)} }
+h1.jit{animation:jit .22s steps(2) 1}
+.sub{margin-top:14px;max-width:30ch;color:var(--text)}
+.gl i{font-style:normal;color:var(--rust);text-shadow:none}
 
-  .timeline{position:relative;margin-top:10px}
-  .timeline::before{
-    content:'';position:absolute;left:13px;top:8px;bottom:8px;width:4px;background:var(--black);
-  }
-  .t-item{
-    position:relative;padding:0 0 52px 64px;
-    opacity:0;transform:translateY(16px);transition:opacity .5s ease,transform .5s ease;
-  }
-  .t-item.show{opacity:1;transform:none}
-  .t-item:last-child{padding-bottom:0}
-  .t-dot{
-    position:absolute;left:0;top:4px;width:30px;height:30px;
-    display:flex;align-items:center;justify-content:center;
-    font-size:17px;line-height:1;
-  }
-  .done .t-dot{background:var(--red);color:var(--paper)}
-  .wip .t-dot{background:var(--paper);border:3px dashed var(--black);color:var(--black);font-size:13px}
-  .t-year{
-    font-family:'Oswald',sans-serif;font-weight:700;font-size:14px;
-    letter-spacing:.22em;text-transform:uppercase;color:var(--red);
-  }
-  .wip .t-year{color:var(--black)}
-  .t-title{
-    font-family:'Oswald',sans-serif;font-weight:700;text-transform:uppercase;
-    font-size:clamp(21px,3.4vw,34px);margin:4px 0 2px;letter-spacing:.02em;
-    overflow-wrap:break-word;
-  }
-  .t-genre{
-    font-family:'Oswald',sans-serif;font-weight:500;font-size:13px;
-    letter-spacing:.16em;text-transform:uppercase;margin-bottom:10px;
-  }
-  .t-desc{max-width:580px;font-size:16.5px}
-  .t-status{
-    display:inline-block;margin-top:14px;
-    font-family:'Oswald',sans-serif;font-weight:600;font-size:12px;
-    letter-spacing:.2em;text-transform:uppercase;padding:6px 14px;
-  }
-  .done .t-status{background:var(--black);color:var(--paper)}
-  .wip .t-status{border:2px dashed var(--black)}
-  .flag{border-left:none}
-  .flag .t-title{color:var(--red)}
-  .flag .t-desc{max-width:640px}
-  .t-links{display:flex;gap:12px;margin-top:16px;flex-wrap:wrap}
-  .t-links a{
-    font-family:'Oswald',sans-serif;font-weight:600;font-size:12px;
-    letter-spacing:.16em;text-transform:uppercase;text-decoration:none;
-    padding:9px 18px;transition:background .2s,color .2s;
-  }
-  .t-links .bt-main{background:var(--red);color:var(--paper)}
-  .t-links .bt-main:hover{background:var(--black)}
-  .t-links .bt-alt{border:2px solid var(--black);color:var(--black)}
-  .t-links .bt-alt:hover{background:var(--black);color:var(--paper)}
-  .t-divider{
-    position:relative;padding:0 0 52px 64px;
-  }
-  .t-divider span{
-    display:inline-block;background:var(--red);color:var(--paper);
-    font-family:'Oswald',sans-serif;font-weight:700;font-size:14px;
-    letter-spacing:.3em;text-transform:uppercase;padding:8px 20px;transform:rotate(-1.5deg);
-  }
+/* событие: белый шум и оранжевые фразы */
+.w-spec .spec-text{transition:opacity .15s}
+.w-spec.evt-on .spec-text{opacity:0;transition-duration:.5s}
+.evt{position:absolute;inset:0;z-index:4;background:#000;opacity:0;pointer-events:none;overflow:hidden}
+.evt.dark{opacity:1;transition:opacity .5s}
+.evt .nz{position:absolute;inset:0;width:100%;height:100%;image-rendering:pixelated;opacity:0;transition:opacity .25s}
+.evt.noisy .nz{opacity:1}
+.evt .ph{
+  position:absolute;left:8%;right:8%;z-index:2;opacity:0;
+  color:var(--orange);font-weight:700;font-size:clamp(1.5rem,6.4vw,2.7rem);line-height:1.1;
+  text-shadow:0 0 14px rgba(255,138,31,.65),2px 0 rgba(255,60,0,.5),-2px 0 rgba(255,200,80,.25);
+  animation:phjit .18s steps(2) infinite;
+}
+.evt .ph.gl i{color:var(--orange);opacity:.55}
+.evt.cut .nz,.evt.cut .ph{opacity:0!important;transition:none}
+.evt.snap,.evt.snap .nz{transition:none!important}
+@keyframes phjit{0%{transform:translate(0,0)}50%{transform:translate(2px,-1px)}100%{transform:translate(-2px,1px)}}
 
-  .telegram-stage{max-width:680px}
-  .telegram{
-    border:3px solid var(--black);background:#fff8;padding:30px 28px 24px;position:relative;
-    opacity:0;transition:opacity .45s ease;
-    min-height:250px;
-  }
-  .telegram.visible{opacity:1}
-  .telegram::before{
-    content:'ТЕЛЕГРАММА';position:absolute;top:-14px;left:18px;
-    background:var(--red);color:var(--paper);
-    font-family:'Oswald',sans-serif;font-weight:700;font-size:11px;
-    letter-spacing:.3em;padding:4px 12px;
-  }
-  .tg-body{display:grid;margin-top:14px}
-  .tg-body p{grid-area:1/1;font-size:17px;margin:0}
-  .tg-ghost{visibility:hidden}
-  .telegram .from{
-    font-family:'Oswald',sans-serif;font-weight:600;font-size:12px;
-    letter-spacing:.18em;text-transform:uppercase;color:var(--red);
-    min-height:2.8em;display:flex;align-items:flex-start;
-  }
-  .tg-cursor{
-    display:inline-block;width:9px;height:1.1em;margin-left:2px;vertical-align:text-bottom;
-    background:var(--black);animation:tgblink .85s steps(1) infinite;
-  }
-  @keyframes tgblink{50%{opacity:0}}
-  .tg-dots{display:flex;gap:12px;margin-top:18px}
-  .tg-dots button{
-    width:14px;height:14px;background:transparent;border:2px solid var(--black);
-    border-radius:50%;cursor:pointer;padding:0;
-  }
-  .tg-dots button.on{background:var(--red);border-color:var(--red)}
-  .tg-dots button:hover{border-color:var(--red)}
+/* оператор */
+.lead{max-width:44ch}
+.lead + .lead{margin-top:10px;color:var(--dim)}
+.rec{margin-top:16px}
+.rec div{display:grid;grid-template-columns:8.6em 1fr;gap:10px;padding:8px 0;border-top:1px solid var(--line)}
+.rec dt{color:var(--dim)}
+.rec dd{color:var(--text)}
 
-  .excerpt-box{
-    border:3px solid var(--black);background:#fff8;
-    padding:44px 48px 56px;position:relative;max-width:760px;
-  }
-  .excerpt-box::after{
-    content:'★';position:absolute;right:22px;bottom:14px;
-    color:var(--red);font-size:26px;
-  }
-  .excerpt-box p{font-size:18px;font-style:italic;margin-bottom:16px}
-  .excerpt-box p:last-of-type{margin-bottom:0}
-  .excerpt-src{
-    margin-top:24px;font-family:'Oswald',sans-serif;font-size:13px;
-    letter-spacing:.22em;text-transform:uppercase;font-style:normal;
-  }
-  .excerpt-src b{color:var(--red);font-weight:600}
+/* журнал */
+.hint{font-size:.8rem;color:var(--dim);margin-bottom:6px;max-width:44ch}
+.group{font-size:.85rem;color:var(--dim);margin:22px 0 6px}
+.tx{border-top:1px solid var(--line)}
+.tx:last-child{border-bottom:1px solid var(--line)}
+.tx-head{
+  display:flex;align-items:center;gap:14px;width:100%;min-height:58px;padding:12px 0;
+  background:none;border:0;color:inherit;font:inherit;text-align:left;cursor:pointer;
+}
+.tx-head:hover .tt{color:#a9f0c4}
+.fq{width:3.4em;font-size:.8rem;color:var(--dim);flex:none}
+.tt{flex:1;font-size:1.08rem;color:var(--bright)}
+.bars{display:flex;align-items:flex-end;gap:2px;height:16px;flex:none}
+.bars i{width:4px;background:var(--line2)}
+.bars i:nth-child(1){height:4px}.bars i:nth-child(2){height:7px}.bars i:nth-child(3){height:10px}
+.bars i:nth-child(4){height:13px}.bars i:nth-child(5){height:16px}
+.bars i.on{background:var(--bright);box-shadow:0 0 6px rgba(127,208,160,.45)}
+.tx.open .fq{color:var(--rust2)}
+.tx-body{padding:2px 0 22px 0}
+.kind{font-size:.82rem;color:var(--dim)}
+.desc{margin:10px 0 12px;min-height:5em}
+.st{font-size:.8rem;color:var(--dim);border-left:2px solid var(--rust);padding-left:10px}
 
-  .boosty-box{
-    display:grid;grid-template-columns:auto 1fr auto;gap:36px;align-items:center;
-    border:3px solid var(--black);background:#fff8;padding:38px 44px;
-    text-decoration:none;color:var(--black);position:relative;
-    transition:background .25s;
-  }
-  .boosty-box::before{
-    content:'';position:absolute;inset:8px;border:1px solid var(--black);pointer-events:none;
-  }
-  .boosty-box:hover{background:#fff}
-  .b-logo{
-    width:90px;height:90px;background:var(--red);color:var(--paper);
-    display:flex;align-items:center;justify-content:center;
-    transform:rotate(-3deg);flex-shrink:0;
-    box-shadow:5px 5px 0 var(--black);
-    transition:transform .25s;
-  }
-  .boosty-box:hover .b-logo{transform:rotate(0deg) scale(1.04)}
-  .b-word{
-    font-family:'Oswald',sans-serif;font-weight:700;font-size:15px;
-    letter-spacing:.24em;text-transform:uppercase;color:var(--red);margin-bottom:8px;
-  }
-  .b-word span{color:var(--black);opacity:.65;text-transform:none;letter-spacing:.1em}
-  .b-text h3{
-    font-family:'Oswald',sans-serif;font-weight:700;font-size:26px;
-    text-transform:uppercase;letter-spacing:.03em;margin-bottom:8px;
-  }
-  .b-text h3 span{color:var(--red)}
-  .b-text p{font-size:16px;max-width:520px}
-  .b-cta{
-    font-family:'Oswald',sans-serif;font-weight:700;font-size:15px;
-    letter-spacing:.18em;text-transform:uppercase;
-    background:var(--black);color:var(--paper);padding:14px 26px;white-space:nowrap;
-    transition:background .2s;
-  }
-  .boosty-box:hover .b-cta{background:var(--red)}
+/* отрывок и связь */
+.poem{border-left:2px solid var(--rust);padding-left:14px;margin:0 0 12px;color:#d0e0d4;line-height:1.8}
+.src{font-size:.8rem;color:var(--dim)}
+.links{margin-top:14px}
+.links a{display:block;padding:12px 0;border-top:1px solid var(--line);color:var(--bright);text-decoration:none;min-height:48px}
+.links a:last-child{border-bottom:1px solid var(--line)}
+.links a:hover{color:#a9f0c4}
 
-  .slogan{background:var(--red);color:var(--paper);border-top:4px solid var(--black)}
-  .slogan .inner{text-align:center;max-width:820px;margin:0 auto}
-  .slogan p{
-    font-family:'Stalinist One',sans-serif;font-size:clamp(20px,3.6vw,38px);
-    line-height:1.35;text-transform:uppercase;
-  }
-  .slogan cite{
-    display:block;margin-top:26px;font-family:'Oswald',sans-serif;font-style:normal;
-    font-size:13px;letter-spacing:.26em;text-transform:uppercase;opacity:.85;
-  }
+footer{margin-top:34px;font-size:.78rem;color:var(--dim)}
+footer p + p{margin-top:6px;color:var(--rust)}
 
-  .contact-row{display:flex;flex-wrap:wrap;gap:18px;margin-top:30px}
-  .contact-row a{
-    font-family:'Oswald',sans-serif;font-weight:600;font-size:15px;
-    letter-spacing:.14em;text-transform:uppercase;text-decoration:none;
-    color:var(--paper);background:var(--black);padding:14px 26px;
-    transition:background .2s;
-  }
-  .contact-row a:hover{background:var(--red)}
+/* шёпот */
+.whisper{
+  position:fixed;left:50%;bottom:16px;transform:translateX(-50%);
+  width:min(560px,100%);padding:0 20px;z-index:60;pointer-events:none;text-align:center;
+  color:var(--rust2);font-size:.85rem;opacity:0;transition:opacity 1.2s;
+}
+.whisper.on{opacity:1}
 
-  footer{
-    border-top:4px solid var(--black);padding:26px 0 40px;
-    font-family:'Oswald',sans-serif;font-size:13px;letter-spacing:.14em;text-transform:uppercase;
-    display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;
-  }
-
-  @media(max-width:760px){
-    .wrap{padding:0 18px}
-    .about-grid{grid-template-columns:1fr}
-    nav{display:none}
-    .hero{padding:48px 0 44px}
-    section{padding:52px 0}
-    .hero .diag{display:none}
-    .hero .call{font-size:12px;letter-spacing:.2em;padding:7px 14px}
-    h1{font-size:clamp(15px,5.4vw,28px);word-break:normal;hyphens:none}
-    .hero .sub{font-size:16px}
-    .t-item{padding-left:48px}
-    .t-divider{padding-left:48px}
-    .slogan p{font-size:clamp(16px,5vw,22px)}
-    .t-links a{padding:8px 12px;font-size:11px;letter-spacing:.1em}
-    .b-logo{width:70px;height:70px}
-    .telegram{min-height:340px;padding:26px 20px 20px}
-    .excerpt-box{padding:28px 20px 52px}
-    .boosty-box{grid-template-columns:1fr;gap:24px;padding:30px 24px;justify-items:start}
-  }
-  @media(prefers-reduced-motion:reduce){
-    .t-item{opacity:1;transform:none;transition:none}
-    html{scroll-behavior:auto}
-  }
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  .grain,.w-spec canvas,.beacon,.cur{animation:none}
+  .beacon{opacity:.8}
+  h1.jit{animation:none}
+}
 </style>
 </head>
 <body>
+<canvas class="fx" id="sky" aria-hidden="true"></canvas>
+<canvas class="fx" id="veins" aria-hidden="true"></canvas>
+<div class="fx grain"></div><div class="fx scan"></div><div class="fx vig"></div><div class="fx pulse" id="pulse"></div>
+<div class="whisper gl" id="whisper" aria-hidden="true"></div>
 
-<div class="stripe" aria-hidden="true"></div>
+<div id="boot" aria-hidden="true">
+  <div class="bootin">
+    <div id="bootlog"></div>
+    <span class="cur"></span>
+    <p class="bootskip">нажмите, чтобы пропустить</p>
+  </div>
+</div>
 
-<div class="wrap">
-  <header>
-    <div class="brand"><span class="star">★</span> Ульяна Карасёва</div>
-    <nav>
-      <a href="#about">Об авторе</a>
-      <a href="#books">Книги</a>
-      <a href="#contact">Связаться</a>
+<header class="bar">
+  <div class="bar-in">
+    <span class="brand"><i class="led" id="led"></i>станция №38</span>
+    <nav aria-label="Разделы">
+      <a href="#log">журнал</a>
+      <a href="#op">оператор</a>
+      <a href="#com">связь</a>
     </nav>
-  </header>
+    <span class="clock" id="clock" aria-hidden="true"></span>
+  </div>
+</header>
 
-  <section class="hero" style="border-top:none">
-    <div class="diag" aria-hidden="true"></div>
-    <div class="call">Гражданин! Читай!</div>
-    <h1>Истории из жизни,<br>дописанные <span class="red">воображением</span></h1>
-    <p class="sub">Истории о людях с тяжёлыми судьбами, удушающие антиутопии и липкие, тёмные стихи — произведения, которые лучше читать на ночь.</p>
-  </section>
+<div class="band" aria-hidden="true">
+  <svg viewBox="0 0 400 160" xmlns="http://www.w3.org/2000/svg">
+    <path d="M0 160V150Q50 140 110 137T215 129T310 121T400 127V160Z" fill="#040605"/>
+    <rect x="66" y="122" width="36" height="18" fill="#040605"/>
+    <rect x="76" y="128" width="7" height="5" fill="#c4573c" opacity=".85"/>
+    <path d="M305 124V60M297 124L305 92L313 124" stroke="#040605" stroke-width="3" fill="none"/>
+    <path d="M280 64Q306 98 338 56" stroke="#040605" stroke-width="5" fill="none" stroke-linecap="round"/>
+    <path d="M309 80L318 46" stroke="#040605" stroke-width="2.5"/>
+    <circle class="beacon" cx="318" cy="43" r="2.8" fill="#c4573c"/>
+  </svg>
+</div>
 
-  <section id="about">
-    <div class="sec-label">Об авторе</div>
-    <h2>Ульяна <em>Карасёва</em></h2>
-    <div class="about-grid">
-      <div>
-        <p>Ульяна Карасёва — современный критик и поэт. Готовит к выходу дебютный сборник стихов «Тьма» и параллельно строит целую полку миров: от магических антиутопий до камерных хорроров.</p>
-        <p>Её герои — ожившие персонажи, окруженные головокружительными событиями. Часто совесть оказывается на заднем плане в тех ситуациях, в которые герои произведений, к несчастью, попали. Каждая из историй содержит прожитые опыт и чувства, тонко дополняемые богатым воображением.</p>
-              </div>
-      <div class="about-facts">
-        <div class="fact"><b>Жанры</b><span>антиутопия, хоррор, психологическая проза, поэзия</span></div>
-        <div class="fact"><b>Флагман</b><span>роман «Душегуб»</span></div>
-        <div class="fact"><b>В работе</b><span>2 произведения · ещё 17 в планах</span></div>
-        <div class="fact"><b>Любимое слово</b><span>«Любовь»</span></div>
-      </div>
-    </div>
-  </section>
-
-  <section id="books">
-    <div class="sec-label">Библиография</div>
-    <h2>Пятилетка прозы: <em>2026—2030</em></h2>
-
-    <div class="timeline">
-
-      <div class="t-divider"><span>В работе</span></div>
-
-      <div class="t-item done">
-        <span class="t-dot" aria-hidden="true">★</span>
-        <div class="t-year">2026 · ожидается в июле–августе</div>
-        <div class="t-title">«Тьма»</div>
-        <div class="t-genre">Сборник стихов №1</div>
-        <p class="t-desc">Первое знакомство. Всё о топливе для писательства, о пути, который привёл к этому ремеслу, о сомнениях, атакующих творческую душу.</p>
-        <span class="t-status">Рукопись · 40%</span>
-        <div class="t-links">
-          <a class="bt-main" href="https://author.today/u/julianakaraseva" target="_blank" rel="noopener">Почитать на AuthorToday</a>
-          <a class="bt-alt" href="https://www.litres.ru" target="_blank" rel="noopener">Почитать на Литрес</a>
+<div class="station">
+  <div class="grid">
+    <div class="col">
+      <section class="win w-spec" aria-label="Ульяна Карасёва">
+        <div class="wt"><b>спектр</b><span>эфир открыт</span></div>
+        <div class="wb">
+          <canvas id="wf" aria-hidden="true"></canvas>
+          <div class="spec-text">
+            <p class="tune" id="tune">приём, 4&nbsp;590 кГц</p>
+            <h1 id="h1"><span class="vh">Ульяна Карасёва</span><span class="gl" id="name" aria-hidden="true"></span></h1>
+            <p class="sub">Истории из жизни, дописанные воображением</p>
+          </div>
+          <div class="evt" id="evt" aria-hidden="true"><canvas class="nz" id="nz"></canvas><div class="ph gl" id="ph"></div></div>
         </div>
-      </div>
+      </section>
 
-      <div class="t-item done flag">
-        <span class="t-dot" aria-hidden="true">★</span>
-        <div class="t-year">2026 · ожидается в октябре–декабре</div>
-        <div class="t-title">«Душегуб»</div>
-        <div class="t-genre">Роман · Тёмное фэнтези · Флагманский проект</div>
-        <p class="t-desc">Магия планеты Нитль угасает, и мир сотрясают катаклизмы. Чтобы оттянуть конец, учёные создали Душегуб — установку, стабилизирующую потоки магии ценой жизни самих магов. Каин — один из узников, отправленных на забой. Его странная сила не калечит тело, как у других, — но чем глубже он её изучает, тем громче становится шёпот существа, оплётшего лозами его душу.</p>
-        <span class="t-status">★ Пролог и главы 1–2 готовы, главы 3–16 в черновом варианте · 40%</span>
-        <div class="t-links">
-          <a class="bt-main" href="https://author.today/u/julianakaraseva" target="_blank" rel="noopener">Почитать на AuthorToday</a>
-          <a class="bt-alt" href="https://www.litres.ru" target="_blank" rel="noopener">Почитать на Литрес</a>
+      <section class="win w-op" id="op">
+        <div class="wt"><b>оператор</b><span>на связи</span></div>
+        <div class="wb">
+          <p class="lead">Современный критик и поэт. Готовит дебютный сборник стихов «Тьма» и строит полку миров: от магических антиутопий до камерных хорроров.</p>
+          <p class="lead">Лучше читать ночью.</p>
+          <dl class="rec">
+            <div><dt>жанры</dt><dd>антиутопия, хоррор, психологическая проза, поэзия</dd></div>
+            <div><dt>флагман</dt><dd>роман «Душегуб»</dd></div>
+            <div><dt>в работе</dt><dd>2 произведения, ещё 17 в планах</dd></div>
+            <div><dt>любимое слово</dt><dd>«Любовь»</dd></div>
+          </dl>
         </div>
-      </div>
+      </section>
 
-      <div class="t-divider"><span>На очереди</span></div>
-
-      <div class="t-item wip">
-        <span class="t-dot" aria-hidden="true">…</span>
-        <div class="t-year">2027 · план</div>
-        <div class="t-title">«Семь смертных грехов»</div>
-        <div class="t-genre">Сборник стихов №2</div>
-        <p class="t-desc">Концептуальный сборник: каждый стих олицетворяет свой грех — в той или иной мере присущий каждому живущему человеку. Семь зеркал, в которые придётся посмотреть.</p>
-        <span class="t-status">«Гордыня» написана · 1 из 7</span>
-      </div>
-
-      <div class="t-item wip">
-        <span class="t-dot" aria-hidden="true">…</span>
-        <div class="t-year">2027 · план</div>
-        <div class="t-title">«Багровый лес»</div>
-        <div class="t-genre">Повесть · Триллер</div>
-        <span class="t-status">Сюжет готов · 25%</span>
-      </div>
-
-      <div class="t-item wip">
-        <span class="t-dot" aria-hidden="true">…</span>
-        <div class="t-year">2028 · план</div>
-        <div class="t-title">«Откуда в монетке отверстие?»</div>
-        <div class="t-genre">Рассказ · Триллер</div>
-        <span class="t-status">Первая глава готова · 20%</span>
-      </div>
-
-      <div class="t-item wip">
-        <span class="t-dot" aria-hidden="true">…</span>
-        <div class="t-year">2028 · план</div>
-        <div class="t-title">«Тридцать Восьмой»</div>
-        <div class="t-genre">Роман-антиутопия</div>
-        <span class="t-status">Часть каркаса сюжета · 3%</span>
-      </div>
-
-      <div class="t-item wip">
-        <span class="t-dot" aria-hidden="true">…</span>
-        <div class="t-year">2028 · план</div>
-        <div class="t-title">«Голоса»</div>
-        <div class="t-genre">Сборник стихов №3</div>
-        <span class="t-status">Не начато</span>
-      </div>
-
-      <div class="t-item wip">
-        <span class="t-dot" aria-hidden="true">…</span>
-        <div class="t-year">2029 · план</div>
-        <div class="t-title">«Сны, что открывали тайны»</div>
-        <div class="t-genre">Рассказ · Мистический хоррор</div>
-        <span class="t-status">Каркас сюжета · доработка · 15%</span>
-      </div>
-
-      <div class="t-item wip">
-        <span class="t-dot" aria-hidden="true">…</span>
-        <div class="t-year">2029 · план</div>
-        <div class="t-title">«Железо»</div>
-        <div class="t-genre">Роман-антиутопия</div>
-        <span class="t-status">Наброски мира и героев · 4%</span>
-      </div>
-
-      <div class="t-item wip">
-        <span class="t-dot" aria-hidden="true">…</span>
-        <div class="t-year">2029 · план</div>
-        <div class="t-title">«Стадии»</div>
-        <div class="t-genre">Сборник стихов №4</div>
-        <span class="t-status">Не начато</span>
-      </div>
-
-      <div class="t-item wip">
-        <span class="t-dot" aria-hidden="true">…</span>
-        <div class="t-year">2030 · план</div>
-        <div class="t-title">«Сигнал»</div>
-        <div class="t-genre">Роман-хоррор</div>
-        <span class="t-status">Не начато</span>
-      </div>
-
-      <div class="t-item wip">
-        <span class="t-dot" aria-hidden="true">…</span>
-        <div class="t-year">2030 · план</div>
-        <div class="t-title">«До чего доводит любовь»</div>
-        <div class="t-genre">Роман · Драма</div>
-        <span class="t-status">Пролог готов · 5%</span>
-      </div>
-
-      <div class="t-item wip">
-        <span class="t-dot" aria-hidden="true">…</span>
-        <div class="t-year">2030 · план</div>
-        <div class="t-title">«Добродетели»</div>
-        <div class="t-genre">Сборник стихов №5</div>
-        <span class="t-status">Не начато</span>
-      </div>
-
-      <div class="t-divider"><span>Дальние планы</span></div>
-
-      <div class="t-item wip">
-        <span class="t-dot" aria-hidden="true">…</span>
-        <div class="t-year">Без даты</div>
-        <div class="t-title">«Мёртвая петля»</div>
-        <div class="t-genre">Роман-хоррор</div>
-        <span class="t-status">Каркас сюжета готов · 7%</span>
-      </div>
-
-      <div class="t-item wip">
-        <span class="t-dot" aria-hidden="true">…</span>
-        <div class="t-year">Без даты</div>
-        <div class="t-title">«Бессонница»</div>
-        <div class="t-genre">Сборник стихов №6</div>
-        <span class="t-status">Замысел</span>
-      </div>
-
-      <div class="t-item wip">
-        <span class="t-dot" aria-hidden="true">…</span>
-        <div class="t-year">Без даты</div>
-        <div class="t-title">«Скрип под полом»</div>
-        <div class="t-genre">Повесть · Хоррор</div>
-        <span class="t-status">Замысел</span>
-      </div>
-
-      <div class="t-item wip">
-        <span class="t-dot" aria-hidden="true">…</span>
-        <div class="t-year">Без даты</div>
-        <div class="t-title">«Конец „Астрала“»</div>
-        <div class="t-genre">ЛитРПГ</div>
-        <span class="t-status">Замысел</span>
-      </div>
-
-      <div class="t-item wip">
-        <span class="t-dot" aria-hidden="true">…</span>
-        <div class="t-year">Без даты</div>
-        <div class="t-title">«Демоническое Возвышение»</div>
-        <div class="t-genre">ЛитРПГ · Попаданец · Бояръ-аниме</div>
-        <span class="t-status">Замысел</span>
-      </div>
-
-      <div class="t-item wip">
-        <span class="t-dot" aria-hidden="true">…</span>
-        <div class="t-year">Без даты</div>
-        <div class="t-title">«Кровоточит — значит смертен»</div>
-        <div class="t-genre">Роман · Хоррор · Драма · Научная фантастика</div>
-        <span class="t-status">Замысел</span>
-      </div>
-
-    </div>
-  </section>
-
-  <section id="press">
-    <div class="sec-label">Пресса</div>
-    <h2>Сообщают <em>читатели</em></h2>
-    <div class="telegram-stage">
-      <div class="telegram" id="tg-card">
-        <div class="from" id="tg-from"></div>
-        <div class="tg-body" id="tg-body">
-          <p id="tg-text"></p>
+      <section class="win w-cut">
+        <div class="wt"><b>перехвачено</b><span>«Гордыня»</span></div>
+        <div class="wb">
+          <p class="poem">Я взял вершину. Мир лежит, бескровный,<br>У ног моих — поверженный, немой.<br>Я — приговор последний и верховный,<br>Но кто теперь услышит голос мой?</p>
+          <p class="src">из сборника «Семь смертных грехов»</p>
         </div>
-      </div>
-      <div class="tg-dots" id="tg-dots" role="tablist" aria-label="Выбор отзыва"></div>
+      </section>
     </div>
-  </section>
 
-  <section id="excerpt">
-    <div class="sec-label">Отрывок</div>
-    <h2>Слово — <em>в массы</em></h2>
-    <div class="excerpt-box">
-      <p style="font-style:normal">Я взял вершину. Мир лежит, бескровный,<br>
-      У ног моих — поверженный, немой.<br>
-      Я — приговор последний и верховный,<br>
-      Но кто теперь услышит голос мой?<br>
-      Я звал войну — и вот, добился мира:<br>
-      Вокруг — ни друга больше, ни врага.<br>
-      Лишь я, мой трон и стынущая лира,<br>
-      И эха нет — лишь снежная пурга.</p>
-      <div class="excerpt-src">«Гордыня» · из готовящегося сборника <b>«Семь смертных грехов»</b></div>
+    <div class="col">
+      <section class="win w-log" id="log">
+        <div class="wt"><b>журнал приёма</b><span>принято: 8</span></div>
+        <div class="wb">
+          <p class="hint">Нажмите на передачу. Шкала справа показывает, насколько готова рукопись.</p>
+          <div id="list"></div>
+        </div>
+      </section>
+
+      <section class="win w-com" id="com">
+        <div class="wt"><b>связь</b><span>ответ ночью</span></div>
+        <div class="wb">
+          <p class="lead">По вопросам издательских прав и интервью — почта. Просто поговорить о книгах — телеграм, отвечаю по ночам.</p>
+          <div class="links">
+            <a href="mailto:hello@karaseva.ru">hello@karaseva.ru</a>
+            <a href="https://t.me/julianakaraseva">Телеграм-канал</a>
+          </div>
+        </div>
+      </section>
     </div>
-  </section>
-
-
-  </div><!-- /wrap -->
-
-  <section class="slogan">
-    <div class="wrap inner">
-      <p>«Выдумывать — это хорошо, конечно: так и пишутся миры. Но есть рецепт: поменьше выдумки, побольше жизненного опыта и чувств. Такова задача»</p>
-      <cite>— Ульяна Карасёва</cite>
-    </div>
-  </section>
-
-  <div class="wrap">
-
-  <section id="boosty" style="border-top:none">
-    <a class="boosty-box" href="https://boosty.to/yourcutiestdream/about" target="_blank" rel="noopener">
-      <div class="b-logo" aria-hidden="true">
-        <svg viewBox="0 0 32 44" width="46" height="62">
-          <path d="M13.5 0 L26 0 L19 16 L28 16 L8 44 L13.5 22 L4 22 Z" fill="currentColor"/>
-        </svg>
-      </div>
-      <div class="b-text">
-        <div class="b-word">boosty<span>.to/yourcutiestdream</span></div>
-        <h3>Поддержать <span>пятилетку прозы</span></h3>
-        <p>Черновики, вычеркнутые главы, стихи до публикации, ежемесячные сводки с письменного стола — и рецензии на всё прочитанное: от свежих новинок до незаслуженно забытых книг.</p>
-      </div>
-      <div class="b-cta">Вступить →</div>
-    </a>
-  </section>
-
-  <section id="contact" style="border-top:none">
-    <div class="sec-label">Контакты</div>
-    <h2>Товарищ, <em>пиши!</em></h2>
-    <p style="max-width:540px">По вопросам издательских прав, интервью и встреч с читателями — почта. Просто поговорить о книгах — соцсети, отвечаю по ночам.</p>
-    <div class="contact-row">
-      <a href="mailto:hello@karaseva.ru">hello@karaseva.ru</a>
-      <a href="https://t.me/julianakaraseva" target="_blank" rel="noopener">Телеграм-канал</a>
-    </div>
-  </section>
+  </div>
 
   <footer>
-    <span>© 2026 · Ульяна Карасёва</span>
-    <span>Пролетарии всех полок — соединяйтесь</span>
+    <p>© 2026 Ульяна Карасёва</p>
+    <p>Передача не прекращается.</p>
   </footer>
 </div>
 
-<div class="stripe" aria-hidden="true"></div>
-
 <script>
-  (function(){
-    const reviews=[
-      {text:'Е??ть тчк у меня даже слов нет зпт мне как обычному читателю очень очень нравится зпт мне в целом подобный жанр вкатывает тчк',
-       from:'— Влад, бета-ридер'},
-      {text:'Пока читал зпт у меня рис выгорел тчк',
-       from:'— Герман, бета-ридер'},
-      {text:'Это хоть сейчас иди и читай всем тчк это очень хорошо тчк те ли люди получают литературные премии вопрос',
-       from:'— Читатель-аноним, о «Гордыне»'},
-      {text:'Вот это 10 из 10 тчк ощущение зпт что я понял не всё зпт но внутри ёкает и отзывается тчк будто с меня списали тчк',
-       from:'— Рома, бета-ридер, о «Гордыне»'}
-    ];
-    const card=document.getElementById('tg-card');
-    const fromEl=document.getElementById('tg-from');
-    const textEl=document.getElementById('tg-text');
-    const dotsEl=document.getElementById('tg-dots');
-    if(!card) return;
-    const body=document.getElementById('tg-body');
-    let run=0;
-    let manualIdx=-1;
-    reviews.forEach((r,idx)=>{
-      const g=document.createElement('p');
-      g.className='tg-ghost';g.setAttribute('aria-hidden','true');
-      g.textContent=r.text;
-      body.appendChild(g);
-      const d=document.createElement('button');
-      d.type='button';
-      d.setAttribute('aria-label','Отзыв '+(idx+1));
-      d.addEventListener('click',()=>{run++;manualIdx=idx;show(idx,run)});
-      dotsEl.appendChild(d);
-    });
-    const dots=dotsEl.children;
-    const reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const wait=ms=>new Promise(r=>setTimeout(r,ms));
-    async function show(idx,token){
-      const manual=(manualIdx===idx);
-      manualIdx=-1;
-      for(let k=0;k<dots.length;k++)dots[k].classList.toggle('on',k===idx);
-      const r=reviews[idx];
-      fromEl.textContent=r.from;
-      textEl.textContent='';
-      card.classList.add('visible');
-      if(reduce){
-        textEl.textContent=r.text;
-        await wait(manual?6500:5200);
-        if(token!==run)return;
-      }else{
-        await wait(700);
-        if(token!==run)return;
-        const cur=document.createElement('span');cur.className='tg-cursor';
-        textEl.appendChild(cur);
-        for(const ch of r.text){
-          cur.before(document.createTextNode(ch));
-          await wait(28);
-          if(token!==run){cur.remove();return}
-        }
-        await wait(1500);
-        if(token!==run){cur.remove();return}
-        cur.remove();
-        await wait(manual?5000:2200);
-        if(token!==run)return;
-      }
-      card.classList.remove('visible');
-      await wait(500);
-      if(token!==run)return;
-      show((idx+1)%reviews.length,token);
+const RM = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const $ = s => document.querySelector(s);
+const clamp = (v,a,b) => Math.max(a, Math.min(b, v));
+
+/* ---------- данные ---------- */
+const TX = [
+  {g:0, f:'3 810', t:'«Тьма»', kind:'Сборник стихов №1, ожидается в июле–августе 2026', p:40,
+   note:'Рукопись готова на 40%.',
+   d:'Первое знакомство. Всё о топливе для писательства, о пути, который привёл к этому ремеслу, о сомнениях, атакующих творческую душу.'},
+  {g:0, f:'4 042', t:'«Душегуб»', kind:'Роман, тёмное фэнтези, флагманский проект, октябрь–декабрь 2026', p:40,
+   note:'Пролог и главы 1–2 готовы, главы 3–16 в черновике.',
+   d:'Магия планеты Нитль угасает, и мир сотрясают катаклизмы. Чтобы оттянуть конец, учёные создали Душегуб — установку, стабилизирующую потоки магии ценой жизни самих магов. Каин — один из узников, отправленных на забой.'},
+  {g:1, f:'4 777', t:'«Семь смертных грехов»', kind:'Сборник стихов №2, 2027', p:14,
+   note:'«Гордыня» написана: 1 из 7.',
+   d:'Каждый стих олицетворяет свой грех — в той или иной мере присущий каждому живущему человеку. Семь зеркал, в которые придётся посмотреть.'},
+  {g:1, f:'5 250', t:'«Багровый лес»', kind:'Повесть, триллер, 2027', p:25,
+   note:'Сюжет готов.',
+   d:'Мужчина оставил жену с деменцией одну и ушёл на вахту лесным рейнджером. Тайны леса переплетаются с его сожалением о том, правильно ли он поступил.'},
+  {g:1, f:'5 918', t:'«Откуда в монетке отверстие?»', kind:'Рассказ, триллер, 2028', p:20,
+   note:'Первая глава готова.',
+   d:'Пропали дети. С пропажами связана странная монетка с отверстием, из которого сочатся кровь и гниль. Обычный мальчик пытается вернуть друзей и сохранить рассудок.'},
+  {g:1, f:'6 038', t:'«Тридцать Восьмой»', kind:'Роман-антиутопия, 2028', p:3,
+   note:'Часть каркаса сюжета.',
+   d:'Человек в чужом мире отказался от совести и честности ради службы в силовых структурах. Расследование ведёт его на улицы тёмного города, где творится невозможное.'},
+  {g:1, f:'7 130', t:'«Железо»', kind:'Роман-антиутопия, 2029', p:4,
+   note:'Наброски мира и героев.',
+   d:'В умирающей стране людей принудительно превращают в киборгов ради выживания нации. Индустриальные города работают лишь затем, чтобы содержать богатые изолированные сословия. Назревает гражданская война.'},
+  {g:1, f:'8 400', t:'«Сигнал»', kind:'Роман-хоррор, 2030', p:0,
+   note:'Не начато. Сигнала пока нет.',
+   echo:'Я тоже\nвас слышу.',
+   d:'Учёный в собственной удалённой обсерватории занят исследованием космоса. Его рутина резко меняется, когда он начинает получать странные сигналы.'}
+];
+const GROUPS = ['Сейчас в эфире','Ожидается'];
+
+/* ---------- декодер текста ---------- */
+const GL = '▓▒░█▚▞▙▜#%/\\|+=<>';
+const esc = s => s.replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+
+function makeDecoder(el, text, ratio, dur){
+  const chars = [...text];
+  const idx = [];
+  chars.forEach((c,i)=>{ if(/\S/.test(c)) idx.push(i); });
+  const rank = new Array(chars.length).fill(-1);
+  idx.slice().sort(()=>Math.random()-.5).forEach((i,r)=>{ rank[i]=r; });
+  const target = Math.round(idx.length * ratio);
+  const full = target >= idx.length;
+  const t0 = performance.now();
+  let timer = null, n = 0;
+  function draw(k){
+    let out = '';
+    for(let i=0;i<chars.length;i++){
+      const c = chars[i];
+      if(c === '\n'){ out += '<br>'; continue; }
+      if(rank[i] < 0 || rank[i] < k) out += esc(c);
+      else out += '<i>' + GL[Math.floor(Math.random()*GL.length)] + '</i>';
     }
-    show(0,run);
+    el.innerHTML = out;
+  }
+  function stop(){ if(timer){ clearInterval(timer); timer = null; } }
+  function tick(){
+    const p = Math.min(1, (performance.now()-t0)/dur);
+    n++;
+    if(p < 1){ draw(Math.round(target*p)); return; }
+    if(full){ draw(target); stop(); return; }
+    if(n % 3 === 0) draw(target);
+  }
+  if(RM){ draw(target); return {stop}; }
+  draw(0);
+  timer = setInterval(tick, 80);
+  return {stop};
+}
+
+/* ---------- небо: звёзды и редкая «аномалия» ---------- */
+(function sky(){
+  const cv = $('#sky'), cx = cv.getContext('2d');
+  let w, h, stars = [], an = null, nextAn = 12000, last = 0;
+  function gen(){
+    w = cv.width = innerWidth; h = cv.height = innerHeight;
+    stars = Array.from({length: Math.round(w*h/8000)}, ()=>({
+      x:Math.random()*w, y:Math.random()*h, r:Math.random()<.12 ? 2 : 1,
+      a:.25 + Math.random()*.6, p:Math.random()*6.28, s:.4 + Math.random()*1.2
+    }));
+  }
+  function draw(t){
+    cx.clearRect(0,0,w,h);
+    for(const s of stars){
+      const a = s.a*(.65 + .35*Math.sin(t*.001*s.s + s.p));
+      cx.fillStyle = 'rgba(190,220,205,' + a.toFixed(3) + ')';
+      cx.fillRect(s.x, s.y, s.r, s.r);
+    }
+    if(an){
+      const dt = 0.08;
+      if(an.hold > 0) an.hold -= dt;
+      else {
+        an.x += an.vx*dt; an.y += an.vy*dt;
+        if(Math.random() < .012) an.hold = 1.5 + Math.random()*2;
+      }
+      const flick = .6 + .4*Math.random();
+      const g = cx.createRadialGradient(an.x, an.y, 0, an.x, an.y, 9);
+      g.addColorStop(0, 'rgba(230,110,80,' + (.9*flick) + ')');
+      g.addColorStop(1, 'rgba(163,52,31,0)');
+      cx.fillStyle = g; cx.fillRect(an.x-9, an.y-9, 18, 18);
+      if(an.x < -30 || an.x > w+30) an = null;
+    }
+  }
+  gen();
+  addEventListener('resize', gen);
+  if(RM){ draw(0); return; }
+  function frame(t){
+    requestAnimationFrame(frame);
+    if(t - last < 80) return;
+    last = t;
+    if(!an && t > nextAn && !document.hidden){
+      const dir = Math.random() < .5 ? 1 : -1;
+      an = {x: dir>0 ? -20 : w+20, y: h*(.06 + Math.random()*.25), vx: dir*w/30, vy: (Math.random()-.5)*4, hold:0};
+      nextAn = t + 35000 + Math.random()*40000;
+    }
+    draw(t);
+  }
+  requestAnimationFrame(frame);
+})();
+
+/* ---------- водопад со скрытыми словами ---------- */
+const wf = (function(){
+  const cv = $('#wf'), cx = cv.getContext('2d');
+  const MH = 22, MSGS = ['СЛЫШУ ВАС','НЕ ГОВОРИ','ОТКРОЙ','Я ЗДЕСЬ'];
+  let W, H, row, carrier, target, mask = null, mrow = 0, msgI = 0, nextMsg = Infinity, nextStep = 0;
+
+  function makeMask(txt){
+    const c = document.createElement('canvas'); c.width = W; c.height = MH;
+    const g = c.getContext('2d');
+    g.fillStyle = '#fff';
+    g.font = '700 16px "Courier New","Liberation Mono",monospace';
+    g.textAlign = 'center'; g.textBaseline = 'middle';
+    g.fillText(txt, W/2 + (Math.random()-.5)*16, MH/2);
+    return g.getImageData(0,0,W,MH).data;
+  }
+  function step(t, live){
+    cx.drawImage(cv, 0, 1);
+    // рваный сдвиг горизонтальной полосы
+    if(live && Math.random() < .015){
+      const y = Math.floor(Math.random()*H*.7), hh = 4 + Math.floor(Math.random()*10);
+      const dx = (Math.random()<.5 ? -1 : 1)*(3 + Math.floor(Math.random()*9));
+      cx.drawImage(cv, 0, y, W, hh, dx, y, W, hh);
+    }
+    if(live){
+      if(Math.random() < .06) target = W*(0.2 + Math.random()*0.6);   // несущая перескакивает
+      carrier += (target - carrier)*.25 + (Math.random()-.5)*1.6;
+    } else {
+      if(Math.random() < .02) target = W*(0.25 + Math.random()*0.55);
+      carrier += (target - carrier)*.03;
+    }
+    const drop = live && Math.random() < .03;                          // на миг пропадает сигнал
+    const gain = live ? .85 + Math.random()*.3 : 1;
+    const burst = Math.random() < (live ? .022 : .015);
+    const bs = Math.random()*W, bl = 10 + Math.random()*30;
+    const rr = mask ? MH-1-mrow : 0;
+    for(let x=0;x<W;x++){
+      let v = Math.random()*36;
+      if(!drop){
+        v += Math.exp(-((x-carrier)**2)/5) * 200 * (0.75 + Math.random()*0.25) * gain;
+        v += Math.exp(-((x-carrier*0.5)**2)/4) * 65 * gain;
+      }
+      v += (x%29===0 ? 38 : 0) + (x%47===0 ? 26 : 0);
+      v += 16*Math.sin(x*0.15 + t*0.001);
+      const m = mask ? mask[(rr*W+x)*4+3]/255 : 0;
+      let r,g,b;
+      if(m > .3){ v += 200*m; r=v*.95; g=v*.28; b=v*.2; }
+      else if(burst && x>bs && x<bs+bl){ v += 110; r=v*.9; g=v*.3; b=v*.2; }
+      else { r=v*.2; g=v*.76; b=v*.4; }
+      const o = x*4;
+      row.data[o]=r; row.data[o+1]=g; row.data[o+2]=b; row.data[o+3]=255;
+    }
+    cx.putImageData(row, 0, 0);
+    if(mask){ mrow++; if(mrow >= MH) mask = null; }
+  }
+  function init(){
+    const r = cv.getBoundingClientRect(), px = 3.2;
+    W = clamp(Math.round(r.width/px), 100, 300);
+    H = clamp(Math.round(r.height/px), 80, 220);
+    cv.width = W; cv.height = H;
+    row = cx.createImageData(W, 1);
+    carrier = W*0.62; target = carrier; mask = null;
+    for(let i=0;i<H;i++) step(i*50, false);
+  }
+  init();
+  let rt; addEventListener('resize', ()=>{ clearTimeout(rt); rt = setTimeout(init, 250); });
+
+  if(!RM){
+    (function frame(t){
+      requestAnimationFrame(frame);
+      if(t < nextStep) return;
+      // неровный ритм: обычно ~55 мс, изредка задержка, изредка рывок на несколько строк
+      nextStep = t + (Math.random() < .06 ? 200 + Math.random()*260 : 42 + Math.random()*36);
+      if(!mask && t > nextMsg && !document.hidden){
+        mask = makeMask(MSGS[msgI++ % MSGS.length]); mrow = 0;
+        nextMsg = t + 22000 + Math.random()*20000;
+      }
+      let n = Math.random() < .1 ? 2 + Math.floor(Math.random()*2) : 1;
+      while(n--) step(t, true);
+    })(0);
+  }
+  return {arm(){ nextMsg = performance.now() + 7000; }};
+})();
+
+/* ---------- сосуды и пульс ---------- */
+let depth = 0;
+(function(){
+  const cv = $('#veins'), cx = cv.getContext('2d'), pulseEl = $('#pulse'), led = $('#led');
+  let paths = [], w = 0, h = 0, phase = 0, lastT = performance.now(), lastDraw = 0;
+  const rng = seed => { let s = seed; return () => (s = (s*16807) % 2147483647) / 2147483647; };
+
+  function gen(){
+    w = cv.width = innerWidth; h = cv.height = innerHeight;
+    const rnd = rng(11); paths = [];
+    function grow(x, y, ang, len, wd, level, delay){
+      const pts = [[x,y]];
+      paths.push({pts, w:wd, delay});
+      for(let i=1;i<=len;i++){
+        ang += (rnd()-.5)*.55;
+        x += Math.cos(ang)*6; y += Math.sin(ang)*6;
+        pts.push([x,y]);
+        if(level < 3 && rnd() < .05){
+          grow(x, y, ang + (rnd()<.5 ? -1 : 1)*(.55 + rnd()*.6), Math.round(len*.6), wd*.68, level+1, delay + .35*(i/len));
+        }
+      }
+    }
+    const side = Math.max(5, Math.min(9, Math.round(h/130)));
+    for(let k=0;k<side;k++){
+      grow(0, h*(k+.5)/side, (rnd()-.5)*.7, 60 + Math.floor(rnd()*30), 3.2, 0, rnd()*.55);
+      grow(w, h*(k+.5)/side, Math.PI + (rnd()-.5)*.7, 60 + Math.floor(rnd()*30), 3.2, 0, rnd()*.55);
+    }
+    const bot = Math.max(3, Math.min(8, Math.round(w/200)));
+    for(let k=0;k<bot;k++) grow(w*(k+.5)/bot, h, -Math.PI/2 + (rnd()-.5)*.8, 50 + Math.floor(rnd()*25), 3, 0, rnd()*.5);
+  }
+  function drawVeins(b){
+    cx.clearRect(0,0,w,h);
+    const P = Math.pow(depth,.8)*.9 + .08;
+    cx.lineCap = 'round'; cx.lineJoin = 'round';
+    for(const p of paths){
+      const f = clamp((P - p.delay)/.35, 0, 1);
+      if(f <= 0) continue;
+      const n = Math.max(2, Math.floor(f*p.pts.length));
+      cx.beginPath(); cx.moveTo(p.pts[0][0], p.pts[0][1]);
+      for(let i=1;i<n;i++) cx.lineTo(p.pts[i][0], p.pts[i][1]);
+      cx.strokeStyle = 'rgba(110,24,16,' + (.34 + .3*b) + ')';
+      cx.lineWidth = p.w*(1 + .35*b); cx.stroke();
+      cx.strokeStyle = 'rgba(190,70,45,' + (.1 + .2*b) + ')';
+      cx.lineWidth = Math.max(.6, p.w*.35); cx.stroke();
+    }
+  }
+  const beatVal = p => Math.exp(-((p-.03)**2)/.0009) + .6*Math.exp(-((p-.2)**2)/.0012);
+  function onScroll(){
+    const max = document.documentElement.scrollHeight - innerHeight;
+    depth = max > 0 ? clamp(scrollY/max, 0, 1) : 0;
+    if(RM) drawVeins(0);
+  }
+  gen(); onScroll();
+  addEventListener('scroll', onScroll, {passive:true});
+  let rt; addEventListener('resize', ()=>{ clearTimeout(rt); rt = setTimeout(()=>{ gen(); onScroll(); }, 200); });
+  if(RM) return;
+  function loop(now){
+    requestAnimationFrame(loop);
+    const dt = Math.min(.1, (now-lastT)/1000); lastT = now;
+    const period = 2.3 - 1.2*depth;
+    phase = (phase + dt/period) % 1;
+    const b = beatVal(phase);
+    pulseEl.style.opacity = (b*(.25 + .75*depth)).toFixed(3);
+    led.style.opacity = (.35 + .65*Math.min(1,b)).toFixed(3);
+    if(now - lastDraw > 33){ lastDraw = now; drawVeins(b*(.3 + .7*depth)); }
+  }
+  requestAnimationFrame(loop);
+})();
+
+
+/* ---------- журнал передач ---------- */
+let openIdx = -1, dec = null, echoT = [];
+const bars = p => {
+  const n = p === 0 ? 0 : Math.max(1, Math.round(p/20));
+  return [1,2,3,4,5].map(k => `<i class="${k<=n?'on':''}"></i>`).join('');
+};
+(function build(){
+  let html = '', g = -1;
+  TX.forEach((x,i)=>{
+    if(x.g !== g){ g = x.g; html += `<p class="group">${GROUPS[g]}</p>`; }
+    html += `
+    <div class="tx" id="tx${i}">
+      <button class="tx-head" aria-expanded="false" aria-controls="p${i}">
+        <span class="fq">${x.f}</span>
+        <span class="tt">${x.t}</span>
+        <span class="bars" role="img" aria-label="Готовность ${x.p}%">${bars(x.p)}</span>
+      </button>
+      <div class="tx-body" id="p${i}" hidden>
+        <p class="kind">${x.kind}</p>
+        <p class="desc"><span class="vh">${x.d}</span><span class="gl dec" aria-hidden="true"></span></p>
+        <p class="st"></p>
+      </div>
+    </div>`;
+  });
+  $('#list').innerHTML = html;
+  $('#list').addEventListener('click', e=>{
+    const b = e.target.closest('.tx-head');
+    if(b) toggle(+b.parentElement.id.slice(2));
+  });
+})();
+
+function clearEcho(){ echoT.forEach(clearTimeout); echoT = []; }
+function show(i){
+  const x = TX[i], box = $('#p'+i), el = box.querySelector('.dec');
+  clearEcho();
+  if(dec) dec.stop();
+  dec = makeDecoder(el, x.d, 1, 1300);
+  box.querySelector('.st').textContent = x.note;
+  if(x.echo && !RM){
+    echoT.push(setTimeout(()=>{
+      if(openIdx !== i) return;
+      if(dec) dec.stop();
+      dec = makeDecoder(el, x.echo, 1, 1300);
+      echoT.push(setTimeout(()=>{
+        if(openIdx !== i) return;
+        if(dec) dec.stop();
+        dec = makeDecoder(el, x.d, 1, 1300);
+      }, 4200));
+    }, 3200));
+  }
+}
+function close(i){
+  const t = $('#tx'+i);
+  t.classList.remove('open');
+  t.querySelector('.tx-head').setAttribute('aria-expanded','false');
+  $('#p'+i).hidden = true;
+  clearEcho();
+  if(dec){ dec.stop(); dec = null; }
+}
+function toggle(i){
+  if(openIdx === i){ close(i); openIdx = -1; return; }
+  if(openIdx >= 0) close(openIdx);
+  openIdx = i;
+  const t = $('#tx'+i);
+  t.classList.add('open');
+  t.querySelector('.tx-head').setAttribute('aria-expanded','true');
+  $('#p'+i).hidden = false;
+  show(i);
+}
+
+/* ---------- часы на панели ---------- */
+(function clock(){
+  const el = $('#clock');
+  const upd = () => { const d = new Date(); el.textContent = String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0'); };
+  upd(); setInterval(upd, 20000);
+})();
+
+/* ---------- событие: водопад темнеет, белый шум, оранжевые фразы ---------- */
+const evtSys = (function(){
+  const box = $('#evt'), cv = $('#nz'), cx = cv.getContext('2d'), ph = $('#ph'), win = document.querySelector('.w-spec');
+  const PHRASES = ['я тебя вижу','ты не один','оно слушает','я знаю, где ты','не закрывай глаза','он уже в комнате','я смотрю в ответ','ты слишком долго слушаешь'];
+  let running = false, timers = [], noiseTimer = null, img = null, t0 = 0;
+  const later = (fn, ms) => timers.push(setTimeout(fn, ms));
+
+  function sizeNoise(){
+    const r = box.getBoundingClientRect();
+    cv.width = Math.max(60, Math.ceil(r.width/3)); cv.height = Math.max(60, Math.ceil(r.height/3));
+    img = cx.createImageData(cv.width, cv.height);
+  }
+  function drawNoise(){
+    const d = img.data, w = cv.width, h = cv.height;
+    const band = Math.floor(((performance.now()-t0)*.12) % h);    // ползущая светлая полоса
+    for(let y=0;y<h;y++){
+      const lift = (y > band && y < band+7) ? 45 : 0;
+      for(let x=0;x<w;x++){
+        const v = Math.random()*140 + lift, o = (y*w+x)*4;
+        d[o] = v; d[o+1] = v; d[o+2] = v; d[o+3] = 255;
+      }
+    }
+    cx.putImageData(img, 0, 0);
+  }
+  function showPhrase(text){
+    ph.style.top = (16 + Math.random()*44) + '%';
+    ph.style.textAlign = ['left','center','right'][Math.floor(Math.random()*3)];
+    ph.style.opacity = 1;
+    if(ph._dec) ph._dec.stop();
+    ph._dec = makeDecoder(ph, text, 1, 320);
+  }
+  function hidePhrase(){
+    if(ph._dec) ph._dec.stop();
+    ph.style.opacity = 0; ph.textContent = '';
+  }
+  function finish(){
+    timers.forEach(clearTimeout); timers = [];
+    clearInterval(noiseTimer); noiseTimer = null;
+    hidePhrase();
+    box.classList.add('snap');
+    box.classList.remove('dark','noisy','cut');
+    win.classList.remove('evt-on');
+    requestAnimationFrame(()=>box.classList.remove('snap'));
+    makeDecoder($('#name'), 'Ульяна\nКарасёва', 1, 500);
+    running = false;
+  }
+  function run(){
+    if(running || RM) return;
+    running = true;
+    sizeNoise(); t0 = performance.now();
+    win.classList.add('evt-on');
+    box.classList.add('dark');                                      // водопад темнеет
+    const list = PHRASES.slice().sort(()=>Math.random()-.5);
+    later(()=>{ box.classList.add('noisy'); drawNoise(); noiseTimer = setInterval(drawNoise, 66); }, 550);
+    later(()=>showPhrase(list[0]), 1000);
+    later(hidePhrase, 2300);
+    later(()=>showPhrase(list[1]), 2450);
+    later(hidePhrase, 3500);
+    later(()=>box.classList.add('cut'), 3500);                       // моргание
+    later(()=>box.classList.remove('cut'), 3640);
+    later(()=>box.classList.add('cut'), 3740);
+    later(finish, 3890);
+  }
+  function roll(){
+    if(running || document.hidden) return;
+    const r = win.getBoundingClientRect();
+    if(r.bottom < 60 || r.top > innerHeight - 60) return;           // окно не на экране
+    if(Math.random() < .5) run();
+  }
+  // проверка: тройной тап по окну запускает событие сразу (для показа, потом убрать)
+  let taps = [];
+  win.addEventListener('click', ()=>{
+    const n = performance.now();
+    taps = taps.filter(t => n - t < 800); taps.push(n);
+    if(taps.length >= 3){ taps = []; run(); }
+  });
+  return {roll};
+})();
+
+/* ---------- запуск после загрузки ---------- */
+function startSite(){
+  makeDecoder($('#name'), 'Ульяна\nКарасёва', 1, 1700);
+
+  const el = $('#tune');
+  const fmt = f => String(f).replace(/\B(?=(\d{3})+(?!\d))/g,'\u00a0');
+  if(RM){ el.textContent = 'приём, ' + fmt(4625) + ' кГц'; }
+  else {
+    let f = 4590;
+    const id = setInterval(()=>{
+      f++; el.textContent = 'приём, ' + fmt(f) + ' кГц';
+      if(f >= 4625) clearInterval(id);
+    }, 48);
+  }
+
+  if(RM) return;
+  wf.arm();
+  setInterval(evtSys.roll, 60000);                                  // раз в минуту шанс 50%
+
+  const h1 = $('#h1');
+  (function jitter(){
+    setTimeout(()=>{
+      h1.classList.add('jit');
+      setTimeout(()=>h1.classList.remove('jit'), 240);
+      jitter();
+    }, 5000 + Math.random()*9000);
   })();
 
-  const items=document.querySelectorAll('.t-item, .t-divider');
-  if('IntersectionObserver' in window){
-    const io=new IntersectionObserver(es=>{
-      es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('show');io.unobserve(e.target)}});
-    },{threshold:.2});
-    document.querySelectorAll('.t-item').forEach(i=>io.observe(i));
-  }else{
-    document.querySelectorAll('.t-item').forEach(i=>i.classList.add('show'));
+  const LINES = ['не оборачивайтесь','передача не прекращалась','вы тоже это слышите?','мы всё ещё здесь'];
+  let n = 0;
+  const wEl = $('#whisper');
+  (function next(){
+    if(n >= LINES.length) return;
+    if(document.hidden){ setTimeout(next, 10000); return; }
+    wEl.classList.add('on');
+    makeDecoder(wEl, LINES[n++], 1, 1400);
+    setTimeout(()=>wEl.classList.remove('on'), 6500);
+    setTimeout(next, 30000 + Math.random()*30000);
+  })();
+}
+
+/* ---------- загрузка станции ---------- */
+(function boot(){
+  const el = $('#boot'), log = $('#bootlog');
+  if(RM){ el.remove(); startSite(); return; }
+  const L = [
+    ['станция приёма №38',''],
+    ['проверка антенны ........ ok',''],
+    ['проверка приёмника ...... ok',''],
+    ['поиск сигнала ........... 4 625 кГц',''],
+    ['оператор: У. Карасёва',''],
+    ['внимание: канал не пуст','warn']
+  ];
+  let i = 0, done = false;
+  function finish(){
+    if(done) return; done = true;
+    startSite();
+    el.classList.add('out');
+    setTimeout(()=>el.remove(), 550);
   }
+  function next(){
+    if(done) return;
+    if(i >= L.length){ setTimeout(finish, 800); return; }
+    const [t, c] = L[i++];
+    log.insertAdjacentHTML('beforeend', `<div class="${c}">${esc(t)}</div>`);
+    setTimeout(next, 380 + Math.random()*220);
+  }
+  el.addEventListener('click', finish);
+  addEventListener('keydown', finish, {once:true});
+  next();
+})();
 </script>
 </body>
 </html>
